@@ -2,3 +2,9 @@ name: PvPStats
 main: com.patrickzhong.pvpstats.Main
 author: ShowbizLocket61
 version: 0.0.1
+
+commands:
+  stats:
+    description: Display PvP statistics on yourself or another player.
+    usage: /<command> [player]
+    aliases: [stat]

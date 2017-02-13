@@ -32,8 +32,8 @@ public class SQLUtil {
 	public void update(SPlayer player){
 		try {
 			
-			String uuid = player.player.getUniqueId().toString();
-			conn.createStatement().executeUpdate("UPDATE pvpstats SET UUID = '"+uuid+"', Kills = "+player.kills+", Deaths = "+player.deaths+", Damage = "+player.damage+" WHERE UUID = '"+uuid+"'");
+			String name = player.player.getName();
+			conn.createStatement().executeUpdate("UPDATE pvpstats SET Username = '"+name+"', Kills = "+player.kills+", Deaths = "+player.deaths+", Damage = "+player.damage+" WHERE Username = '"+name+"'");
 			
 		} catch (SQLException e) {
 			main.getLogger().info(ExceptionUtils.getStackTrace(e));
@@ -47,20 +47,45 @@ public class SQLUtil {
 		
 		try {
 			
-			String uuid =  player.getUniqueId().toString();
-			ResultSet set = conn.createStatement().executeQuery("SELECT UUID, Kills, Deaths, Damage FROM pvpstats WHERE UUID = '"+uuid+"'");
-			
-			if(set.next()){
-				splayer.kills = set.getInt("Kills");
-				splayer.deaths = set.getInt("Deaths");
-				splayer.damage = set.getDouble("Damage");
+			double[] stats = getStats(player.getName());
+		
+			if(stats != null){
+				splayer.kills = (int)stats[0];
+				splayer.deaths = (int)stats[1];
+				splayer.damage = stats[2];
 			}
 			else
-				conn.createStatement().executeUpdate("INSERT INTO pvpstats(UUID, Kills, Deaths, Damage) VALUES ('"+uuid+"',0,0,0)");
+				conn.createStatement().executeUpdate("INSERT INTO pvpstats(Username, Kills, Deaths, Damage) VALUES ('"+player.getName()+"',0,0,0)");
 			
 		} catch (SQLException e) {
 			main.getLogger().info(ExceptionUtils.getStackTrace(e));
 		}
+	}
+	
+	public double[] getUnsafeStats(String name) throws SQLException{
+			
+		ResultSet set = conn.createStatement().executeQuery("SELECT Username, Kills, Deaths, Damage FROM pvpstats WHERE Username = '"+name+"'");
+		
+		if(set.next()){
+			return new double[]{
+					set.getInt("Kills"),
+					set.getInt("Deaths"),
+					set.getDouble("Damage")
+			};
+		}
+		
+		return null;
+	}
+	
+	public double[] getStats(String name){
+		try {
+			return getUnsafeStats(name);
+		}
+		catch (SQLException e){
+			main.getLogger().info(ExceptionUtils.getStackTrace(e));
+		}
+		
+		return null;
 	}
 	
 }

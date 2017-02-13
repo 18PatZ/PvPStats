@@ -1,7 +1,13 @@
 package com.patrickzhong.pvpstats;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -59,6 +65,30 @@ public class Main extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent ev){
 		players.remove(ev.getPlayer());
+	}
+	
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+		
+		String name;
+		
+		if(args.length == 0)
+			name = sender.getName();
+		else
+			name = args[0];
+		
+		double[] stats = util.getStats(name);
+		
+		if(stats == null){
+			sender.sendMessage(ChatColor.DARK_RED+"Could not find any stats for "+ChatColor.RED+name);
+			return true;
+		}
+		
+		sender.sendMessage(ChatColor.GRAY+"Stats for "+ChatColor.AQUA+name);
+		sender.sendMessage(ChatColor.GOLD+"Kills"+ChatColor.GRAY+": "+ChatColor.YELLOW+(int)stats[0]);
+		sender.sendMessage(ChatColor.GOLD+"Deaths"+ChatColor.GRAY+": "+ChatColor.YELLOW+(int)stats[1]);
+		sender.sendMessage(ChatColor.GOLD+"Damage"+ChatColor.GRAY+": "+ChatColor.YELLOW+(int)stats[2]);
+		
+		return true;
 	}
 	
 	private Player get(Entity ent){

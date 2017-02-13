@@ -22,7 +22,7 @@ public class SQLUtil {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com", "sql3158806", "fvQAF769bI");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost", "root", "password");
 			conn.createStatement().execute("USE pvpstats");
 		} catch (SQLException | ClassNotFoundException e) {
 			main.getLogger().info(ExceptionUtils.getStackTrace(e));
